@@ -21,3 +21,4 @@ bin-release/
 *.iml
 out
 gen
+node_modules
