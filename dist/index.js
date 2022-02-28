@@ -18,15 +18,19 @@ const notice_address = [
 var web3 = new web3_1.default('http://locahost:8545');
 const networks = [97, 80001];
 var noticeData = {};
+var noticeString = '';
 let ethBalance, weiBalance = '';
 let chainId = 0;
+const getWeb3 = () => {
+    const web3 = new web3_1.default('http://locahost:8545');
+    return web3;
+};
 async function notice(msgs) {
-    let param = " chainid : " + chainId; //+ "  address :" + token + " , balance : " + data ;
+    let param = msgs;
+    console.log(param);
     let output;
     try {
-        const res = await axios_1.default.post(`${routerUrl}`, {
-            "text": param
-        });
+        const res = await axios_1.default.post(`${routerUrl}`, { "text": param });
         output = res.data;
     }
     catch (error) {
@@ -39,41 +43,30 @@ async function notice(msgs) {
 function getBscTestInfo() {
     //设置web3对象
     chainId = 97;
-    noticeData[chainId] = [];
     const web3 = new web3_1.default('https://data-seed-prebsc-2-s2.binance.org:8545'); //bsc test 地址
     notice_address.forEach(async (address) => {
         weiBalance = await web3.eth.getBalance(address);
         ethBalance = web3.utils.fromWei(weiBalance);
-        console.log("chainId:" + chainId + ", addr : " + address + ", ethBalance : " + ethBalance);
-        noticeData[chainId].push({ addr: address, balance: ethBalance });
+        noticeString += "chainId:" + chainId + ", addr: " + address + ", balance: " + ethBalance + '\n';
+        console.log(noticeString);
     });
-    // notify(
-    //     97,
-    //     routerAddress,
-    //     ethBalance
-    // );
+    notice(noticeString);
 }
 // function getPolygonTestInfo():Promise<Record<number, { addr: string; balance: string }[]> > {
 function getPolygonTestInfo() {
     //设置web3对象
     chainId = 80001;
-    noticeData[chainId] = [];
     const web3 = new web3_1.default("https://rpc-mumbai.matic.today/");
     notice_address.forEach(async (address) => {
         weiBalance = await web3.eth.getBalance(address);
         ethBalance = web3.utils.fromWei(weiBalance);
-        console.log("chainId:" + chainId + ", addr : " + address + ", ethBalance : " + ethBalance);
-        noticeData[chainId].push({ addr: address, balance: ethBalance });
+        noticeString += "chainId:" + chainId + ", addr: " + address + ", balance: " + ethBalance + '\n';
+        console.log(noticeString);
     });
-    console.log("finish 80001" + noticeData);
+    notice(noticeString);
 }
-const getWeb3 = () => {
-    const web3 = new web3_1.default('http://locahost:8545');
-    return web3;
-};
 const getchainBalance = async () => {
     networks.forEach((chainId) => {
-        noticeData[chainId] = [];
         console.log("Running for network : ", chainId);
         switch (chainId) {
             case 97:
@@ -81,18 +74,20 @@ const getchainBalance = async () => {
                 notice_address.forEach(async (address) => {
                     weiBalance = await web3.eth.getBalance(address);
                     ethBalance = web3.utils.fromWei(weiBalance);
-                    console.log("chainId:" + chainId + ", addr : " + address + ", ethBalance : " + ethBalance);
-                    noticeData[chainId].push({ addr: address, balance: ethBalance });
+                    noticeString += "chainId:" + chainId + ", addr: " + address + ", balance: " + ethBalance + '\n';
+                    // console.log(noticeString);
                 });
+                console.log("1 :" + noticeString);
             case 80001:
-                // web3 = new Web3("https://rpc-mumbai.matic.today/");
-                web3 = new web3_1.default('wss://ws-mumbai.matic.today');
+                web3 = new web3_1.default('https://rpc-mumbai.matic.today/');
+                // web3 = new Web3('wss://ws-mumbai.matic.today');
                 notice_address.forEach(async (address) => {
                     weiBalance = await web3.eth.getBalance(address);
                     ethBalance = web3.utils.fromWei(weiBalance);
-                    console.log("chainId:" + chainId + ", addr : " + address + ", ethBalance : " + ethBalance);
-                    noticeData[chainId].push({ addr: address, balance: ethBalance });
+                    noticeString += "chainId:" + chainId + ", addr: " + address + ", balance: " + ethBalance + '\n';
+                    // console.log(noticeString);
                 });
+                console.log("2 :" + noticeString);
             case 56:
                 web3 = new web3_1.default('wss://bsc-ws-node.nariox.org');
             case 137:
